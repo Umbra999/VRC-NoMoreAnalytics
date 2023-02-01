@@ -3,6 +3,7 @@ using System;
 using VRC.Core;
 using System.Reflection;
 using HarmonyLib;
+using System.Linq;
 
 namespace VRC_NoMoreAnalytics
 {
@@ -38,12 +39,19 @@ namespace VRC_NoMoreAnalytics
             CreatePatch(typeof(Analytics).GetFromMethod(nameof(Analytics.Awake)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(Analytics).GetFromMethod(nameof(Analytics.Update)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.Initialize)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.CheckInstance)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.SetUserProperties)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(SessionManager).GetFromMethod(nameof(SessionManager.Awake)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.Init)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.StartNewSession)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.StartSession)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.UpdateServer)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.UpdateServerDelayed)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper._UpdateServerDelayed_b__68_0)), GetPatch(nameof(ReturnFalsePrefix)));
+            foreach (MethodInfo method in typeof(AmplitudeWrapper).GetMethods().Where(x => x.Name == "Initialize"))
+            {
+                CreatePatch(method, GetPatch(nameof(ReturnFalsePrefix)));
+            }
         }
 
         private static void AllowBoolPostfix(ref bool __result)
