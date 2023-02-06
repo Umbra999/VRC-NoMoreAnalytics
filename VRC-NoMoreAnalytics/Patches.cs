@@ -36,21 +36,39 @@ namespace VRC_NoMoreAnalytics
         public static unsafe void ApplyPatches()
         {
             // Analytics
-            CreatePatch(typeof(Analytics).GetFromMethod(nameof(Analytics.Awake)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsSDK).GetFromMethod(nameof(AnalyticsSDK.Initialize)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsSDK).GetFromMethod(nameof(AnalyticsSDK.AvatarUploaded)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsSDK).GetFromMethod(nameof(AnalyticsSDK.WorldUploaded)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsSDK).GetFromMethod(nameof(AnalyticsSDK.Initialize)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsSDK).GetFromMethod(nameof(AnalyticsSDK.CheckInit)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(Analytics).GetFromMethod(nameof(Analytics.Update)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.Initialize)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.CheckInstance)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.SetUserProperties)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.SetBuildVersion)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.SetLogger)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(AnalyticsInterface).GetFromMethod(nameof(AnalyticsInterface.SetUserId)), GetPatch(nameof(ReturnFalsePrefix)));
             CreatePatch(typeof(SessionManager).GetFromMethod(nameof(SessionManager.Awake)), GetPatch(nameof(ReturnFalsePrefix)));
-            CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.Init)), GetPatch(nameof(ReturnFalsePrefix)));
-            CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.StartNewSession)), GetPatch(nameof(ReturnFalsePrefix)));
-            CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.StartSession)), GetPatch(nameof(ReturnFalsePrefix)));
-            CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.UpdateServer)), GetPatch(nameof(ReturnFalsePrefix)));
-            CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper.UpdateServerDelayed)), GetPatch(nameof(ReturnFalsePrefix)));
-            CreatePatch(typeof(AmplitudeWrapper).GetFromMethod(nameof(AmplitudeWrapper._UpdateServerDelayed_b__68_0)), GetPatch(nameof(ReturnFalsePrefix)));
-            foreach (MethodInfo method in typeof(AmplitudeWrapper).GetMethods().Where(x => x.Name == "Initialize"))
+            CreatePatch(typeof(DatabaseHelper).GetFromMethod(nameof(DatabaseHelper.LoadFromCache)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(DatabaseHelper).GetFromMethod(nameof(DatabaseHelper.SaveToCache)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(DatabaseHelper).GetFromMethod(nameof(DatabaseHelper.GetCacheFilePath)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(DatabaseHelper).GetFromMethod(nameof(DatabaseHelper.GetEvents)), GetPatch(nameof(ReturnFalsePrefix)));
+            CreatePatch(typeof(DatabaseHelper).GetFromMethod(nameof(DatabaseHelper.AddEvent)), GetPatch(nameof(ReturnFalsePrefix)));
+            foreach (MethodInfo Method in typeof(AmplitudeWrapper).GetMethods().Where(x => x.Name.Contains("Init") || x.Name.Contains("UpdateServer") || x.Name.Contains("PostEvents") || x.Name.Contains("SaveEvent") || x.Name.Contains("SaveAndUpload") || x.Name.Contains("SetUser") || x.Name.Contains("Session")))
+            {
+                CreatePatch(Method, GetPatch(nameof(ReturnFalsePrefix)));
+            }
+            foreach (MethodInfo method in typeof(AnalyticsInterface).GetMethods().Where(x => x.Name == "Send"))
             {
                 CreatePatch(method, GetPatch(nameof(ReturnFalsePrefix)));
+            }
+            foreach (MethodInfo method in typeof(AnalyticsSDK).GetMethods().Where(x => x.Name == "LoggedInUserChanged"))
+            {
+                CreatePatch(method, GetPatch(nameof(ReturnFalsePrefix)));
+            }
+            foreach (MethodInfo Method in typeof(UnityEngine.Analytics.Analytics).GetMethods().Where(x => x.Name.Contains("SendCustom") || x.Name.Contains("Queue")))
+            {
+                CreatePatch(Method, GetPatch(nameof(ReturnFalsePrefix)));
             }
         }
 
