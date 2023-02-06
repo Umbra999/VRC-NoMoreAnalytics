@@ -21,3 +21,5 @@ Now we have most of this methods bypassed and all outgoing reqs would fail
 ![image](https://user-images.githubusercontent.com/69671761/214994415-16c47c93-45b3-46c4-b80a-adc2251c73ba.png)
 
 Just to be sure we stop the Loop too incase they try to add a check and reinit it here at some point (will also give you some of your sweet frames back)
+
+As of now VRChat added some internal checks to it so other methods try to reinit the Analytics Instance which also gets returned now so everything should work on further updates.
